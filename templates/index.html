@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='icon.ico') }}" type="image/x-icon">
+    <title>Remote Controller</title>
+    <style>
+        .arrow-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px;
+            margin-bottom: 0px;
+            margin-top: 30px;
+        }
+
+        .arrow-row {
+            display: flex;
+        }
+
+        .arrow-button {
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Remote Controller</h1>
+
+    <!-- VLC Controls -->
+    <div class="main-buttons">
+        <button onclick="sendCommand('volume_up')">⬆️/🔊</button>
+        <br>
+        <button onclick="sendCommand('rewind')">⏪/⬅️</button>
+        <button onclick="sendCommand('play_pause')">⏯️</button>
+        <button onclick="sendCommand('fast_forward')">➡️/⏩</button>
+        <br>
+        <button onclick="sendCommand('volume_down')">⬇️/🔈</button>
+        <br>
+        <br>
+        <button class="button" onclick="sendCommand('tab')">↹</button>
+        <button onclick="sendBackspace()">⌫</button>
+    </div>
+
+
+
+    <!-- Arrow buttons for Mouse Control -->
+    <div class="arrow-buttons">
+        <div class="arrow-row">
+            <button class="arrow-button" onmousedown="startMove(0, -10)" onmouseup="stopMove()">↑</button>
+        </div>
+        <div class="arrow-row">
+            <button class="arrow-button" onmousedown="startMove(-10, 0)" onmouseup="stopMove()">←</button>
+            <button onclick="sendEnter()">Enter</button>
+            <button class="arrow-button" onmousedown="startMove(10, 0)" onmouseup="stopMove()">→</button>
+        </div>
+        <div class="arrow-row">
+            <button class="arrow-button" onmousedown="startMove(0, 10)" onmouseup="stopMove()">↓</button>
+        </div>
+      <div>
+        <button onclick="sendCommand('left_click')">Left Click</button>
+        <button onclick="sendCommand('right_click')">Right Click</button>
+      </div>
+    </div>
+
+    <!-- Text Input -->
+    <div>
+        <input type="text" id="textInput" placeholder="Type something..." onkeypress="handleKeyPress(event)">
+        <button onclick="sendTextInput()">Send Text</button>
+    </div>
+
+    <script>
+        let moveInterval;  // Variable to store the interval ID
+
+        function startMove(x_offset, y_offset) {
+            // Move the mouse continuously while the button is held down
+            moveMouse(x_offset, y_offset);
+            moveInterval = setInterval(() => {
+                moveMouse(x_offset, y_offset);
+            }, 100); // Adjust the interval as needed (100ms)
+        }
+
+        function stopMove() {
+            clearInterval(moveInterval); // Stop moving when the button is released
+        }
+
+        function moveMouse(x_offset, y_offset) {
+            fetch('/control', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ action: 'move', x_offset: x_offset, y_offset: y_offset })
+            }).then(response => response.json())
+              .then(data => console.log(data));
+        }
+
+        function sendCommand(action) {
+            fetch('/control', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ action: action })
+            }).then(response => response.json())
+              .then(data => console.log(data));
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendTextInput();
+                event.preventDefault();  // Prevent default behavior of the enter key
+            }
+        }
+
+        function sendTextInput() {
+            const text = document.getElementById('textInput').value;
+            if (text) {
+                fetch('/control', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ action: 'send_text', text: text })
+                }).then(response => response.json())
+                  .then(data => console.log(data));
+
+                // Clear the input after sending
+                document.getElementById('textInput').value = '';
+            }
+        }
+
+        function sendBackspace() {
+            fetch('/control', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ action: 'clear_text' })
+            }).then(response => response.json())
+              .then(data => console.log(data));
+        }
+
+        function sendEnter() {
+            fetch('/control', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ action: 'send_text', text: '\n' }) // Simulate Enter key
+            }).then(response => response.json())
+              .then(data => console.log(data));
+        }
+    </script>
+</body>
+</html>

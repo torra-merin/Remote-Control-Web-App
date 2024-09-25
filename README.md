@@ -1,6 +1,6 @@
 # Remote Control Web App
 
-This is a Python Flask-based web application that allows users to control their computer remotely via a web interface. With this app, you can move the mouse, simulate key presses (like Tab, Backspace), control media in VLC, and send text input to the computer—all from a browser on your phone or any other device connected to the same local network.
+This is a Python Flask-based web application that allows users to control their computer remotely via a web interface. With this app, you can move the mouse, simulate key presses (like Tab, Backspace, Enter), control media players such as VLC and PopcornTime, and send text input to your computer—all from a browser on your phone or any device connected to the same local network.
 
 ## Features
 
@@ -18,5 +18,4 @@ This is a Python Flask-based web application that allows users to control their 
 - keyboard module
 
 ## Notice of Generative AI Use
-
 This project, including portions of the code and the design of the logo, was developed with the assistance of generative AI tools, including but not limited to code suggestions and logo creation.

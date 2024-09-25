@@ -16,3 +16,7 @@ This is a Python Flask-based web application that allows users to control their 
 - Flask
 - PyAutoGUI
 - keyboard module
+
+## Notice of Generative AI Use
+
+This project, including portions of the code and the design of the logo, was developed with the assistance of generative AI tools, including but not limited to code suggestions and logo creation.
